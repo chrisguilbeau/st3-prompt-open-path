@@ -6,6 +6,7 @@ from os.path import isdir
 from os.path import join
 from os.path import split
 from os.path import commonprefix
+from os.path import normpath
 from os import sep
 import rlcompleter
 
@@ -54,7 +55,12 @@ class St3PromptOpenPath(WindowCommand):
 
     def on_done(self, text):
         if isdir(text):
-            message_dialog('Can not open directories')
+            window = self.window
+            projectData = window.project_data()
+            folders = window.folders()
+            if text not in folders:
+                projectData.get('folders', []).append(dict(path=normpath(text)))
+                self.window.set_project_data(projectData)
             return
         try:
             self.window.open_file(text)
