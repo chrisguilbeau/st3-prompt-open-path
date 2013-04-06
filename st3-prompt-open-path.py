@@ -34,7 +34,6 @@ class CompletePath(TextCommand):
         # Add a trailing slash if you are tabbing into a directory
         if len(options) == 1 and isdir(newText):
             newText = join(newText, '')
-        print(newText)
         panel.replace(edit, region, newText)
 
 class St3PromptOpenPath(WindowCommand):
