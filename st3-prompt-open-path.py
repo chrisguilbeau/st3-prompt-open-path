@@ -1,22 +1,22 @@
 # python imports
 from os import listdir
+from os import sep
+from os.path import commonprefix
 from os.path import dirname
 from os.path import expanduser
 from os.path import isdir
 from os.path import join
-from os.path import split
-from os.path import commonprefix
 from os.path import normpath
-from os import sep
+from os.path import split
 import rlcompleter
 
 # sublime imports
-from sublime_plugin import WindowCommand
-from sublime_plugin import TextCommand
 from sublime import error_message
 from sublime import message_dialog
-from sublime import status_message
 from sublime import Region
+from sublime import status_message
+from sublime_plugin import TextCommand
+from sublime_plugin import WindowCommand
 
 class CompletePath(TextCommand):
     def run(self, edit, text):
