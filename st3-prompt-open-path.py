@@ -25,7 +25,7 @@ class CompletePath(TextCommand):
         panel = self.view
         newText = join(baseDir, partialPath)
         region = Region(0, panel.size())
-        options = [name for name in listdir(baseDir) if name.startswith(partialPath)]        
+        options = [name for name in listdir(baseDir) if name.startswith(partialPath)]
         status_message(' ,'.join(options))
         if not options:
             newText = text
@@ -41,8 +41,6 @@ class St3PromptOpenPath(WindowCommand):
     def run(self):
         window = self.window
         activeView = self.window.active_view()
-        # turn off tab completion
-        activeView.settings()
         homeDir = expanduser('~')
         currentDir = dirname(activeView.file_name()) if activeView else homeDir
         self.panel = self.window.show_input_panel(
@@ -53,16 +51,21 @@ class St3PromptOpenPath(WindowCommand):
             None
         )
     def on_change(self, text):
+        if not getattr(self, 'panel', None):
+            return
         self.panel.settings().set('tab_completion', False)
         if text.endswith('\t'):
             self.panel.run_command('complete_path', dict(text=text.strip()))
     def on_done(self, text):
         if isdir(text):
             window = self.window
-            projectData = window.project_data()
-            folders = window.folders()
-            if text not in folders:
-                projectData.get('folders', []).append(dict(path=normpath(text)))
+            # window.run_command('add_folder', dict(dirs=[text]))
+            # return
+            projectData = window.project_data() or dict()
+            if text not in window.folders():
+                folders = projectData.get('folders', [])
+                folders.append(dict(path=normpath(text)))
+                projectData['folders'] = folders
                 self.window.set_project_data(projectData)
             return
         try:
