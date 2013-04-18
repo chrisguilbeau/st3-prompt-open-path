@@ -42,7 +42,7 @@ class St3PromptOpenPath(WindowCommand):
         window = self.window
         activeView = self.window.active_view()
         homeDir = expanduser('~')
-        currentDir = dirname(activeView.file_name()) if activeView else homeDir
+        currentDir = dirname(activeView.file_name()) if activeView and activeView.file_name() else homeDir
         self.panel = self.window.show_input_panel(
             "Open path:",
             join(currentDir, ''),
@@ -51,6 +51,7 @@ class St3PromptOpenPath(WindowCommand):
             None
         )
     def on_change(self, text):
+        # for some reason, on_change get's called when self.panel is not set
         if not getattr(self, 'panel', None):
             return
         self.panel.settings().set('tab_completion', False)
@@ -59,10 +60,8 @@ class St3PromptOpenPath(WindowCommand):
     def on_done(self, text):
         if isdir(text):
             window = self.window
-            # window.run_command('add_folder', dict(dirs=[text]))
-            # return
-            projectData = window.project_data() or dict()
             if text not in window.folders():
+                projectData = window.project_data() or dict()
                 folders = projectData.get('folders', [])
                 folders.append(dict(path=normpath(text)))
                 projectData['folders'] = folders
